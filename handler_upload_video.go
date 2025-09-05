@@ -55,14 +55,14 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	file, header, err := r.FormFile("video")
+	file, handler, err := r.FormFile("video")
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Unable to parse form file", err)
 		return
 	}
 	defer file.Close()
 
-	mediaType, _, err := mime.ParseMediaType(header.Header.Get("Content-Type"))
+	mediaType, _, err := mime.ParseMediaType(handler.Header.Get("Content-Type"))
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Content-Type", err)
 		return
@@ -221,10 +221,9 @@ func generatePresignedURL(s3Client *s3.Client, bucket, key string, expireTime ti
 	presignClient := s3.NewPresignClient(s3Client)
 	
 	presignedUrl, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
-		Bucket: &bucket,
-		Key:    &key,
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
 	}, s3.WithPresignExpires(expireTime))
-	
 	if err != nil {
 		return "", fmt.Errorf("failed to generate presigned URL: %w", err)
 	}
