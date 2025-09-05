@@ -145,7 +145,7 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
   
-	video, err := cfg.dbVideoToSignedVideo(video)
+	video, err = cfg.dbVideoToSignedVideo(video)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't generate signed video", err)
 		return
